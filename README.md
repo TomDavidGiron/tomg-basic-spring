@@ -643,8 +643,8 @@ aws account: 995553441267
 
 application.properies
 ```
-amazon.aws.accesskey=AKIA6PS436XZZSSPURH2
-amazon.aws.secretkey=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
+amazon.aws.accesskey=AKIA6PS436XZYWXCULH3
+amazon.aws.secretkey=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
 bucket.url=files.handson.academy
 ```
 
