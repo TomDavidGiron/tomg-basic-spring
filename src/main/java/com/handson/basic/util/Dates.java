@@ -78,4 +78,8 @@ public class Dates {
             return Objects.equals(date1, date2);
         }
     }
+
+    public static Date atUtc(java.time.LocalDate birthDate) {
+        return null;
+    }
 }
