@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.handson.basic.model.*;
 import com.handson.basic.repo.StudentService;
 import com.handson.basic.util.AWSService;
+import com.handson.basic.util.SmsService;
+import org.apache.commons.collections4.IteratorUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -18,6 +20,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import static ch.qos.logback.core.util.OptionHelper.isEmpty;
 import static com.handson.basic.util.Dates.atUtc;
 import static com.handson.basic.util.FPS.FPSBuilder.aFPS;
 import static com.handson.basic.util.FPSCondition.FPSConditionBuilder.aFPSCondition;
@@ -38,6 +41,22 @@ public class StudentsController {
 
     @Autowired
     AWSService awsService;
+
+    @Autowired
+    SmsService smsService;
+
+    @RequestMapping(value = "/sms/all", method = RequestMethod.POST)
+    public ResponseEntity<?> smsAll(@RequestParam String text)
+    {
+        new Thread(()-> {
+            IteratorUtils.toList(studentService.all().iterator())
+                    .parallelStream()
+                    .map(student -> student.getPhone())
+                    .filter(phone -> !isEmpty(phone))
+                    .forEach(phone -> smsService.send(text, phone));
+        }).start();
+        return new ResponseEntity<>("SENDING", HttpStatus.OK);
+    }
 
     @RequestMapping(value = "/{id}/image", method = RequestMethod.PUT)
     public ResponseEntity<?> uploadStudentImage(@PathVariable Long id,  @RequestParam("image") MultipartFile image)
