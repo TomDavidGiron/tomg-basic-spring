@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.handson.basic.model.*;
 import com.handson.basic.repo.StudentService;
 import com.handson.basic.util.AWSService;
+import com.handson.basic.util.HandsonException;
 import com.handson.basic.util.SmsService;
 import org.apache.commons.collections4.IteratorUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,7 +63,7 @@ public class StudentsController {
     public ResponseEntity<?> uploadStudentImage(@PathVariable Long id,  @RequestParam("image") MultipartFile image)
     {
         Optional<Student> dbStudent = studentService.findById(id);
-        if (dbStudent.isEmpty()) throw new RuntimeException("Student with id: " + id + " not found");
+        if (dbStudent.isEmpty()) throw new HandsonException("Student with id: " + id + " not found");
         String bucketPath = "apps/tom/student-" +  id + ".png" ;
         awsService.putInBucket(image, bucketPath);
         dbStudent.get().setProfilePicture(bucketPath);
@@ -131,7 +132,7 @@ public class StudentsController {
     public ResponseEntity<?> updateStudent(@PathVariable Long id, @RequestBody StudentIn student)
     {
         Optional<Student> dbStudent = studentService.findById(id);
-        if (dbStudent.isEmpty()) throw new RuntimeException("Student with id: " + id + " not found");
+        if (dbStudent.isEmpty()) throw new HandsonException("Student with id: " + id + " not found");
         student.updateStudent(dbStudent.get());
         Student updatedStudent = studentService.save(dbStudent.get());
         return new ResponseEntity<>(updatedStudent, HttpStatus.OK);
@@ -141,7 +142,7 @@ public class StudentsController {
     public ResponseEntity<?> deleteStudent(@PathVariable Long id)
     {
         Optional<Student> dbStudent = studentService.findById(id);
-        if (dbStudent.isEmpty()) throw new RuntimeException("Student with id: " + id + " not found");
+        if (dbStudent.isEmpty()) throw new HandsonException("Student with id: " + id + " not found");
         studentService.delete(dbStudent.get());
         return new ResponseEntity<>("DELETED", HttpStatus.OK);
     }
