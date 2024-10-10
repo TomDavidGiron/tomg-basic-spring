@@ -9,6 +9,8 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 
 @Entity
@@ -42,6 +44,13 @@ public class Student implements Serializable {
 
     @Length(max = 500)
     private String profilePicture;
+
+    @OneToMany(mappedBy = "student", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    private Collection<StudentGrade> studentGrades = new ArrayList<>();
+
+    public Collection<StudentGrade> getStudentGrades() {
+        return studentGrades;
+    }
 
     public Long getId() {
         return id;
