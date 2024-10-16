@@ -20,6 +20,7 @@ import javax.validation.constraints.Min;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static ch.qos.logback.core.util.OptionHelper.isEmpty;
 import static com.handson.basic.util.Dates.atUtc;
@@ -49,14 +50,13 @@ public class StudentsController {
     @RequestMapping(value = "/sms/all", method = RequestMethod.POST)
     public ResponseEntity<?> smsAll(@RequestParam String text)
     {
-        new Thread(()-> {
-            IteratorUtils.toList(studentService.all().iterator())
-                    .parallelStream()
-                    .map(student -> student.getPhone())
-                    .filter(phone -> !isEmpty(phone))
-                    .forEach(phone -> smsService.send(text, phone));
-        }).start();
-        return new ResponseEntity<>("SENDING", HttpStatus.OK);
+        List<String> phones =
+                IteratorUtils.toList(studentService.all().iterator())
+                        .parallelStream()
+                        .map(student -> student.getPhone())
+                        .filter(phone -> !isEmpty(phone))
+                        .collect(Collectors.toList());
+        return new ResponseEntity<>(smsService.send(new MessageAndPhones()), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/{id}/image", method = RequestMethod.PUT)
