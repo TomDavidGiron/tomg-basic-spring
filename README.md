@@ -1,0 +1,1 @@
+Developed a student management system using Spring Boot, PostgreSQL, and Swagger for streamlined API documentation. The project follows a microservices architecture, with Maven managing dependencies and build processes. For cloud storage, I integrated AWS S3, providing secure file handling. Additionally, I implemented SMS notification functionality.
